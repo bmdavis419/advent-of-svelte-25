@@ -1,0 +1,19 @@
+@import 'tailwindcss';
+
+@layer components {
+	:root {
+		--color-primary: #10b04a;
+	}
+
+	.text-primary {
+		@apply text-[#10B04A];
+	}
+
+	.bg-primary {
+		@apply bg-[#10B04A];
+	}
+
+	.border-primary {
+		@apply border-[#10B04A];
+	}
+}
