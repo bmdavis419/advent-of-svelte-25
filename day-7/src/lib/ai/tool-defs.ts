@@ -2,6 +2,28 @@ import { toolDefinition } from '@tanstack/ai';
 import { clientTools } from '@tanstack/ai-client';
 import z from 'zod';
 
+export const getUserPunishmentDef = toolDefinition({
+	name: 'get_user_punishment',
+	description: 'Get the punishment for a user by their id',
+	inputSchema: z.object({
+		userId: z.string().describe('The id of the user to get the punishment of')
+	}),
+	outputSchema: z.discriminatedUnion('status', [
+		z.object({
+			status: z.literal('success'),
+			data: z.object({
+				punishment: z.string().describe('The punishment for the user')
+			})
+		}),
+		z.object({
+			status: z.literal('error'),
+			data: z.object({
+				message: z.string()
+			})
+		})
+	])
+});
+
 export const getUserDef = toolDefinition({
 	name: 'get_user',
 	description: 'Get the user info by their id',
@@ -26,7 +48,7 @@ export const getUserDef = toolDefinition({
 	])
 });
 
-export const getUserUserAccomplishmentsDef = toolDefinition({
+export const getUserAccomplishmentsDef = toolDefinition({
 	name: 'get_user_accomplishments',
 	description: "Get the user's accomplishments this year by their id",
 	inputSchema: z.object({
@@ -50,5 +72,5 @@ export const getUserUserAccomplishmentsDef = toolDefinition({
 
 export const clientToolDefList = clientTools(
 	getUserDef.client(),
-	getUserUserAccomplishmentsDef.client()
+	getUserAccomplishmentsDef.client()
 );
