@@ -6,5 +6,7 @@
 		"window.activeBorder": "#10B04A",
 		"titleBar.activeBackground": "#10B04A",
 		"titleBar.activeForeground": "#ffffff"
-	}
+	},
+	"typescript.tsdk": "./node_modules/typescript/lib",
+	"typescript.enablePromptUseWorkspaceTsdk": true
 }

@@ -1,31 +1,40 @@
 import { getRequestEvent, query } from '$app/server';
-import { trace } from '@opentelemetry/api';
+import * as Resource from '@effect/opentelemetry/Resource';
+import * as Tracer from '@effect/opentelemetry/Tracer';
+import { Duration, Effect, Layer, ManagedRuntime, Random } from 'effect';
 
-const tracer = trace.getTracer('demo.remote');
+const TracingLive = Tracer.layerGlobal.pipe(
+	Layer.provide(Resource.layer({ serviceName: 'effect-land' }))
+);
 
-const fakeLongFunction = async () => {
-    return tracer.startActiveSpan('fakeLongFunction', async (span) => {
-        const numbers: number[] = [];
+const runtime = ManagedRuntime.make(TracingLive);
 
-        for (let i = 0; i < 100; i++) {
-            numbers.push(Math.random());
-            await new Promise((resolve) => setTimeout(resolve, 10));
-        }
+const getRandomNumbers = Effect.gen(function* () {
+	const numbers: number[] = [];
 
-        span.setAttribute('numbers.count', numbers.length);
-        span.end();
-        return numbers;
-    });
-}
+	for (let i = 0; i < 100; i++) {
+		const number = yield* Random.nextIntBetween(0, 100);
+		numbers.push(number);
+		yield* Effect.sleep(Duration.millis(10));
+	}
+
+	return numbers;
+}).pipe(Effect.withSpan('getRandomNumbers'));
 
 export const remoteDemoFetch = query(async () => {
-    const event = getRequestEvent()
+	const event = getRequestEvent();
 
-    event.tracing.current.updateName('remote.demo.fetch');
+	event.tracing.current.updateName('remote.demo.fetch');
 
-    const numbers = await fakeLongFunction()
+	const numbers = await getRandomNumbers.pipe(
+		Tracer.withSpanContext(event.tracing.current.spanContext()),
+		runtime.runPromise
+	);
+
+	const traceId = event.tracing.root.spanContext().traceId;
 
 	return {
-        numbers
-    };
+		numbers,
+		traceId
+	};
 });
