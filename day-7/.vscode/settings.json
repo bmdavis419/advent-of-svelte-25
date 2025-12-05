@@ -3,8 +3,8 @@
 		"*.css": "tailwindcss"
 	},
 	"workbench.colorCustomizations": {
-		"window.activeBorder": "#10B04A",
-		"titleBar.activeBackground": "#10B04A",
+		"window.activeBorder": "#b02010",
+		"titleBar.activeBackground": "#b02010",
 		"titleBar.activeForeground": "#ffffff"
 	},
 	"typescript.tsdk": "./node_modules/typescript/lib",
