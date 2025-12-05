@@ -13,6 +13,7 @@
         "@tanstack/ai-client": "^0.0.2",
         "@tanstack/ai-openai": "^0.0.2",
         "import-in-the-middle": "^2.0.0",
+        "zod": "^4.1.13",
       },
       "devDependencies": {
         "@sveltejs/adapter-vercel": "^6.2.0",

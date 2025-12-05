@@ -1,3 +1,4 @@
+import { clientToolDefList } from '$lib/ai/tool-defs';
 import { ChatClient, fetchServerSentEvents } from '@tanstack/ai-client';
 
 export class ListStore {
@@ -5,7 +6,8 @@ export class ListStore {
 	isLoading = $state(false);
 
 	private client = new ChatClient({
-		connection: fetchServerSentEvents(`/api/user/${this.userId}`),
+		connection: fetchServerSentEvents(`/api/list/${this.userId}`),
+		tools: clientToolDefList,
 		initialMessages: [],
 		onMessagesChange: (messages) => {
 			console.log('messages', messages);
