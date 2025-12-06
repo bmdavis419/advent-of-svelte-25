@@ -6,16 +6,15 @@
 
 <main class="flex grow flex-col items-center justify-start gap-4">
 	<div class="w-[900px] flex flex-col items-center gap-8">
-		{#if listStore.isLoading}
-			<div class="flex flex-col items-center justify-center gap-2">
-				<div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
-				<p class="text-center text-lg text-neutral-500">Loading...</p>
-			</div>
-		{/if}
 		<button
 			onclick={listStore.startStream}
-			class="bg-primary text-white px-4 py-2 rounded-md"
-			disabled={listStore.isLoading}>Start stream</button
+			class="bg-primary text-white px-4 py-2 rounded-md flex items-center justify-center gap-2"
+			disabled={listStore.isLoading}
+		>
+			{#if listStore.isLoading}
+				<div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-white"></div>
+			{/if}
+			Start stream</button
 		>
 
 		<div class="flex flex-col gap-2">

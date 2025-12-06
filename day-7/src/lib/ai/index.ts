@@ -2,6 +2,7 @@ import { CLAUDE_API_KEY } from '$env/static/private';
 import { chat } from '@tanstack/ai';
 import { getUserAccomplishmentsDef, getUserDef, getUserPunishmentDef } from './tool-defs';
 import { createAnthropic } from '@tanstack/ai-anthropic';
+import type { Span } from '@opentelemetry/api';
 
 const adapter = createAnthropic(CLAUDE_API_KEY, {});
 
@@ -76,8 +77,17 @@ Return a markdown formatted response that includes the user's info, a list of th
 Be friendly and tongue and cheek in your response, this is for a demo and meant to be fun and lighthearted.
 `;
 
-export const userNaughtyOrNiceList = (userId: string, conversationId: string) => {
-	return chat({
+export const userNaughtyOrNiceList = (args: {
+	userId: string;
+	conversationId: string;
+	span: Span;
+}) => {
+	const { userId, conversationId, span } = args;
+
+	span.setAttribute('userId', userId);
+	span.setAttribute('conversationId', conversationId);
+
+	const stream = chat({
 		adapter,
 		model: 'claude-haiku-4-5',
 		conversationId,
@@ -90,4 +100,38 @@ export const userNaughtyOrNiceList = (userId: string, conversationId: string) =>
 			}
 		]
 	});
+
+	async function* wrapStream() {
+		for await (const chunk of stream) {
+			yield chunk;
+
+			const randomNumber = Math.random();
+
+			if (randomNumber > 0.7) {
+				const err = new Error(
+					`nope we're done here. sorry. trace id: ${span.spanContext().traceId}`
+				);
+				span.recordException(err);
+				span.end();
+				throw err;
+			}
+
+			if (chunk.type === 'done' && chunk.usage) {
+				span.setAttribute('usage.promptTokens', chunk.usage.promptTokens);
+				span.setAttribute('usage.completionTokens', chunk.usage.completionTokens);
+				span.setAttribute('usage.totalTokens', chunk.usage.totalTokens);
+				console.log('=== Turn Completed ===');
+				console.log('Token Usage:', {
+					promptTokens: chunk.usage.promptTokens,
+					completionTokens: chunk.usage.completionTokens,
+					totalTokens: chunk.usage.totalTokens
+				});
+				console.log('======================');
+			}
+		}
+		console.log('=== Stream Completed ===');
+		span.end();
+	}
+
+	return wrapStream();
 };

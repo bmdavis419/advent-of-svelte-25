@@ -36,6 +36,9 @@ export class ListStore {
 			connection: fetchServerSentEvents(`/api/list/${this.userId}`),
 			tools: clientToolDefList,
 			initialMessages: [],
+			onError(error) {
+				alert(`something went wrong: ${error.message}`);
+			},
 			// WHY ISN'T THIS TYPE SAFE GUYS COME ON PLEASE
 			onChunk: (chunk) => {
 				switch (chunk.type) {
@@ -55,9 +58,7 @@ export class ListStore {
 		})
 	);
 
-	constructor() {
-		$inspect(this.isLoading);
-	}
+	constructor() {}
 
 	startStream = async () => {
 		this.isLoading = true;
