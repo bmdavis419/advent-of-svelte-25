@@ -105,16 +105,16 @@ export const userNaughtyOrNiceList = (args: {
 		for await (const chunk of stream) {
 			yield chunk;
 
-			const randomNumber = Math.random();
+			// const randomNumber = Math.random();
 
-			if (randomNumber > 0.7) {
-				const err = new Error(
-					`nope we're done here. sorry. trace id: ${span.spanContext().traceId}`
-				);
-				span.recordException(err);
-				span.end();
-				throw err;
-			}
+			// if (randomNumber > 0.7) {
+			// 	const err = new Error(
+			// 		`nope we're done here. sorry. trace id: ${span.spanContext().traceId}`
+			// 	);
+			// 	span.recordException(err);
+			// 	span.end();
+			// 	throw err;
+			// }
 
 			if (chunk.type === 'done' && chunk.usage) {
 				span.setAttribute('usage.promptTokens', chunk.usage.promptTokens);
