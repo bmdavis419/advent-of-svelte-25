@@ -72,6 +72,8 @@ A user is on the nice list if all of their accomplishments this year involve sve
 
 If they are on the naughty list, check what punishment they should receive.
 
+IF YOU ARE NOT READY TO RETURN YOUR FINAL RESPONSE, DO NOT SAY ANYTHING ABOUT WHAT YOU ARE DOING. ONLY CALL TOOLS.
+
 Return a markdown formatted response that includes the user's info, a list of their accomplishments this year, and whether they are on the naughty or nice list and why, and finally the punishment they should receive if they are on the naughty list. Make sure the punishment is formatted to be large and bold at the bottom of the response.
 
 Be friendly and tongue and cheek in your response, this is for a demo and meant to be fun and lighthearted.
@@ -90,6 +92,11 @@ export const userNaughtyOrNiceList = (args: {
 	const stream = chat({
 		adapter,
 		model: 'claude-haiku-4-5',
+		providerOptions: {
+			thinking: {
+				type: 'disabled'
+			}
+		},
 		conversationId,
 		tools: [getUserServer, getUserAccomplishmentsServer, getUserPunishmentServer],
 		systemPrompts: [USER_NAUGHTY_LIST_PROMPT],
@@ -107,7 +114,7 @@ export const userNaughtyOrNiceList = (args: {
 
 			// const randomNumber = Math.random();
 
-			// if (randomNumber > 0.7) {
+			// if (randomNumber > 0.8) {
 			// 	const err = new Error(
 			// 		`nope we're done here. sorry. trace id: ${span.spanContext().traceId}`
 			// 	);

@@ -23,7 +23,7 @@
 			<h1
 				class="text-3xl font-serif font-bold bg-linear-to-r from-red-400 via-red-100 to-green-400 bg-clip-text text-transparent tracking-wide drop-shadow-sm"
 			>
-				North Pole Operations
+				Advent of Svelte
 			</h1>
 			<span class="text-4xl transform group-hover:-rotate-12 transition-transform duration-300"
 				>🎁</span

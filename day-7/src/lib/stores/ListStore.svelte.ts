@@ -1,5 +1,4 @@
 import { clientToolDefList } from '$lib/ai/tool-defs';
-import { messages } from '@tanstack/ai';
 import {
 	ChatClient,
 	createChatClientOptions,
