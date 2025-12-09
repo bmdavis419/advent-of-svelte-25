@@ -9,7 +9,7 @@
 </script>
 
 <svelte:head>
-	<title>My SvelteKit App</title>
+	<title>Christmas List</title>
 	<link rel="icon" href={favicon} />
 </svelte:head>
 

@@ -48,7 +48,7 @@ const initialList = [
 	}
 ] satisfies ListStoreItem[];
 
-class ChristmasListStore {
+export class ChristmasListStore {
 	private internalSearchTree = $state<InternalBTreeBecauseItsFunnyLeaveMeAlone | null>(null);
 
 	private internalSearchTreeToArray = (
@@ -67,8 +67,29 @@ class ChristmasListStore {
 
 	private getKey = (item: ListStoreItem) => {
 		// yes, this is completely brain dead. I'm just screwing around for the bit
-		const priceWith20Spaces = item.price.toString().padEnd(20, '0');
+		const priceWith20Spaces = item.price.toString().padStart(20, '0');
 		return `${priceWith20Spaces}-${item.id}`;
+	};
+
+	private internalGetItemFromSearchTree = (
+		key: string,
+		tree: InternalBTreeBecauseItsFunnyLeaveMeAlone | null
+	): ListStoreItem | null => {
+		const curTree = $state.snapshot(tree);
+
+		if (curTree === null) {
+			return null;
+		}
+
+		if (key === curTree.key) {
+			return curTree.value;
+		}
+
+		if (key < curTree.key) {
+			return this.internalGetItemFromSearchTree(key, curTree.left);
+		}
+
+		return this.internalGetItemFromSearchTree(key, curTree.right);
 	};
 
 	private internalRemoveFromSearchTree = (
@@ -141,22 +162,30 @@ class ChristmasListStore {
 
 	addToList = (item: ListStoreItem) => {
 		this.internalSearchTree = this.internalAddToSearchTree(item, this.internalSearchTree);
+		const key = this.getKey(item);
+		return key;
 	};
 
 	removeFromList = (key: string) => {
 		this.internalSearchTree = this.internalRemoveFromSearchTree(key, this.internalSearchTree);
 	};
 
-	constructor() {
-		initialList.forEach(this.addToList);
+	getItemFromList = (key: string) => {
+		return this.internalGetItemFromSearchTree(key, this.internalSearchTree);
+	};
+
+	constructor(args: { includeDefaultList: boolean }) {
+		if (args.includeDefaultList) {
+			initialList.forEach(this.addToList);
+		}
 	}
 }
 
 const [internalGet, internalSet] = createContext<ChristmasListStore>();
 
 export const setChristmasListStore = () => {
-	const store = new ChristmasListStore();
-	internalSet(store);
+	const store = new ChristmasListStore({ includeDefaultList: true });
+	return internalSet(store);
 };
 
 export const getChristmasListStore = () => {
